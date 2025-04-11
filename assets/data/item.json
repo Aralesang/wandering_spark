@@ -1,0 +1,73 @@
+[
+    {
+        "id": 1,
+        "type": 1,
+        "name": "微弱的治愈药剂",
+        "description": "细小的伤口缓缓的治愈了,但是即使一瓶全部喝下去,也只治好了猫抓程度的伤口",
+        "icon": "image/icon/item/微弱的治愈药剂.png",
+        "stats":{
+            "hp": 2
+        }
+    },
+    {
+        "id": 2,
+        "type":2,
+        "name": "水手服",
+        "icon": "image/icon/item/水手服.png",
+        "description": "水手的衣服其实大多数情况下是男海员穿的吧",
+        "slot":"上衣"
+    },
+    {
+        "id": 3,
+        "type":2,
+        "name": "短裙",
+        "icon": "image/icon/item/短裙.png",
+        "description": "虽然只有几个像素点,但是它看上去确实像是一条裙子",
+        "slot":"下装"
+    },
+    {
+        "id": 4,
+        "type":2,
+        "name": "工作装",
+        "description": "这种结实的背带装,轻便,整洁,外形也十分不错",
+        "icon": "image/icon/item/工作装.png",
+        "slot":"上衣"
+    },
+    {
+        "id": 5,
+        "type":2,
+        "name": "短裤",
+        "description": "1、2、3、4...emmm只有24个像素吗,但如果和工作装组合在一起,确实很像是短裤呢",
+        "icon": "image/icon/item/短裤.png",
+        "slot":"下装"
+    },
+    {
+        "id": 6,
+        "type":2,
+        "name": "生锈的铁剑",
+        "description": "从坟头上捡来的,似乎诉说了某人的传说,虽有所不敬,但你此刻真的需要它",
+        "slot":"武器",
+        "icon": "image/icon/item/生锈的铁剑.png",
+        "stats":{
+            "atk":5
+        }
+    },
+    {
+        "id": 7,
+        "type":2,
+        "name": "微弱的生命戒指",
+        "description": "只要戴上它,生命力就会得到增强,但这似乎是一件尘封已久的古董,其中蕴含的力量已经枯竭了",
+        "slot":"戒指",
+        "stats":{
+            "hpMax":2
+        }
+    },
+    {
+        "id": 8,
+        "type":2,
+        "name": "微弱的治愈项链",
+        "description": "仿佛一粒晶莹剔透的种子,在阳光下散发着绿色的清澈光芒",
+        "slot":"项链",
+        "skills":[1]
+    }
+]

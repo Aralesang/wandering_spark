@@ -1,0 +1,40 @@
+[
+    {
+        "id": 1,
+        "name": "玩家",
+        "w": 16,
+        "h": 16,
+        "stats": {
+            "hp": 5,
+            "hpMax": 10,
+            "atk": 1,
+            "speed": 50,
+            "range": 20
+        },
+        "hair":4,
+        "skills":[2],
+        "items":[{"id":1},{"id":2,"equip":false},{"id":3,"equip":false},{"id":4,"equip":true},{"id":5,"equip":true},{"id":6,"equip":true}]
+    },
+    {
+        "id": 2,
+        "name": "史莱姆",
+        "w": 16,
+        "h": 16,
+        "stats": {
+            "hp": 10,
+            "hpMax": 2,
+            "atk": 1,
+            "sight": 100,
+            "speed": 100,
+            "range": 32
+        }
+    },
+    {
+        "id": 3,
+        "name": "露比",
+        "w": 16,
+        "h": 16,
+        "hair":2,
+        "items":[{"id":2,"equip":true},{"id":3,"equip":true}]
+    }
+]

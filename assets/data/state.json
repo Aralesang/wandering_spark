@@ -1,0 +1,32 @@
+[
+    {
+        "id":1,
+        "name":"闲置",
+        "branch":[2,3,4,5],
+        "func":"idle_state"
+    },
+    {
+        "id":2,
+        "name":"移动中",
+        "branch":[1,3,4,5],
+        "func":"walk_state"
+    },
+    {
+        "id":3,
+        "name":"攻击",
+        "branch":[1,4,5],
+        "func":"attack_state"
+    },
+    {
+        "id":4,
+        "name":"受伤",
+        "branch":[1,5],
+        "func":"damage_state"
+    },
+    {
+        "id":5,
+        "name":"死亡",
+        "branch":[],
+        "func":"death_state"
+    }
+]

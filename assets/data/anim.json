@@ -1,0 +1,72 @@
+[
+    {
+        "id":1,
+        "name": "闲置",
+        "path": "image/anim/player/idle.png",
+        "frame": 1,
+        "loop": true
+    },
+    {
+        "id":2,
+        "name": "行走",
+        "path": "image/anim/player/walk.png",
+        "frame": 8,
+        "loop": true
+    },
+    {
+        "id":3,
+        "name": "挥击",
+        "path": "image/anim/player/attack.png",
+        "frame": 4,
+        "loop": false
+    },
+    {
+        "id":4,
+        "name": "受伤",
+        "path": "image/anim/player/hurt.png",
+        "frame": 3,
+        "loop": false
+    },
+    {
+        "id":5,
+        "name": "死亡",
+        "path": "image/anim/death/.png",
+        "frame": 8,
+        "loop": false
+    },
+    {
+        "id":6,
+        "name": "闲置_史莱姆",
+        "path": "image/anim/slime/idle.png",
+        "frame": 2,
+        "loop": true
+    },
+    {
+        "id":7,
+        "name": "行走_史莱姆",
+        "path": "image/anim/slime/walk.png",
+        "frame": 5,
+        "loop": true
+    },
+    {
+        "id":8,
+        "name": "攻击_史莱姆",
+        "path": "image/anim/slime/attack.png",
+        "frame": 5,
+        "loop": false
+    },
+    {
+        "id":9,
+        "name": "受伤_史莱姆",
+        "path": "image/anim/slime/idle.png",
+        "frame": 3,
+        "loop": false
+    },
+    {
+        "id":10,
+        "name": "死亡_史莱姆",
+        "path": "image/anim/slime/death.png",
+        "frame": 5,
+        "loop": false
+    }
+]
