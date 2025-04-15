@@ -1,11 +1,11 @@
-use bevy::prelude::*;
+use bevy::{input::keyboard, prelude::*};
 
 /**
  * 玩家
  */
 #[derive(Component)]
-struct Player{
-    moveing: bool
+struct Player {
+    moveing: bool,
 }
 
 /**
@@ -44,8 +44,6 @@ fn setup(
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    //加载图片
-    let texture: Handle<Image> = asset_server.load("image/anim/player/idle.png");
     //构建帧动画结构
     let indices = AnimationIndices {
         size: 32,
@@ -53,6 +51,9 @@ fn setup(
         row: 4,
         direction: 0,
     };
+    //加载图片
+    let texture: Handle<Image> = asset_server.load("image/anim/player/idle.png");
+
     //构建纹理布局
     let layout = TextureAtlasLayout::from_grid(
         UVec2::splat(indices.size as u32),
@@ -65,9 +66,9 @@ fn setup(
     let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
     commands.spawn(Camera2d);
     commands.spawn((
-        Player{moveing: false},
+        Player { moveing: false },
         Transform {
-            scale: Vec3::splat(1.0),
+            scale: Vec3::splat(3.0),
             ..default()
         },
         Name("露比".to_string()),
@@ -92,46 +93,84 @@ fn move_player(
     mut sprite: Single<&mut Sprite, With<Player>>,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut indices:Single<&mut AnimationIndices, With<Player>>,
-    mut player:Single<&mut Player, With<Player>>,
+    mut indices: Single<&mut AnimationIndices, With<Player>>,
+    mut player: Single<&mut Player, With<Player>>,
 ) {
     let mut x: f32 = 0.0;
     let mut y: f32 = 0.0;
+    let mut direction: usize = indices.direction;
+    let mut move_ing: bool = false;
+    let mut path: &str = "";
+    let mut colum: usize = indices.colum;
+    //是否改变图像
+    let mut change: bool = false;
+
     if keyboard_input.pressed(KeyCode::ArrowRight) {
         x += 1.0;
+        direction = 2;
     }
     if keyboard_input.pressed(KeyCode::ArrowLeft) {
         x -= 1.0;
+        direction = 3;
     }
     if keyboard_input.pressed(KeyCode::ArrowUp) {
         y += 1.0;
+        direction = 1;
     }
     if keyboard_input.pressed(KeyCode::ArrowDown) {
         y -= 1.0;
-        if player.moveing == false {
-            player.moveing = true;
-            //修改动画
-            sprite.image = asset_server.load("image/anim/player/walk.png");
-            //构建帧动画结构
-            indices.colum = 8;
-            //构建纹理布局
-            let layout = TextureAtlasLayout::from_grid(
-                UVec2::splat(indices.size as u32),
-                indices.colum as u32,
-                indices.row as u32,
-                None,
-                None,
-            );
-            let texture_atlas_layout: Handle<TextureAtlasLayout> =
-                texture_atlas_layouts.add(layout);
-            if let Some(atlas) = &mut sprite.texture_atlas {
-                atlas.layout = texture_atlas_layout;
-                atlas.index = 0;
-            }
+        direction = 0;
+    }
+
+    if y != 0.0 || x != 0.0 {
+        move_ing = true;
+        transform.translation.x += x;
+        transform.translation.y += y;
+    }
+
+    //进入闲置
+    if !move_ing && player.moveing {
+        path = "image/anim/player/idle.png";
+        colum = 1;
+        player.moveing = false;
+        change = true;
+    }
+
+    //进入移动
+    if move_ing && !player.moveing {
+        path = "image/anim/player/walk.png";
+        colum = 8;
+        player.moveing = true;
+        change = true;
+    }
+
+    if direction != indices.direction {
+        change = true;
+    }
+
+    //如果需要改变图像
+    if change {
+        //修改动画
+        if path != "" {
+            sprite.image = asset_server.load(path);
+        }
+        //构建帧动画结构
+        indices.colum = colum;
+        indices.direction = direction;
+        //构建纹理布局
+        let layout = TextureAtlasLayout::from_grid(
+            UVec2::splat(indices.size as u32),
+            indices.colum as u32,
+            indices.row as u32,
+            None,
+            None,
+        );
+        let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
+        if let Some(atlas) = &mut sprite.texture_atlas {
+            atlas.layout = texture_atlas_layout;
+            atlas.index = indices.direction * indices.colum;
         }
     }
-    transform.translation.x += x;
-    transform.translation.y += y;
 }
 
 /**
@@ -146,8 +185,8 @@ fn animate_sprite(
         //定时器控制播放速度
         if timer.finished() {
             if let Some(atlas) = &mut sprite.texture_atlas {
-                if atlas.index == indices.direction * indices.row + indices.colum - 1 {
-                    atlas.index = indices.direction * indices.row;
+                if atlas.index == indices.direction * indices.colum + indices.colum - 1 {
+                    atlas.index = indices.direction * indices.colum;
                 } else {
                     atlas.index += 1;
                 }
