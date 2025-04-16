@@ -13,6 +13,7 @@ impl Plugin for AnimateSpritePlugin {
  */
 #[derive(Component)]
 pub struct AnimationIndices {
+    pub name: String,
     pub size: usize,
     pub colum: usize,
     pub row: usize,
