@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use crate::animate_sprite::*;
+use bevy::prelude::*;
 
 /**
  * 玩家
@@ -8,6 +8,12 @@ use crate::animate_sprite::*;
 struct Player {
     moveing: bool,
 }
+
+/**
+ * 装备
+ */
+#[derive(Component)]
+struct Equipment;
 
 pub struct PlayerPlugin;
 
@@ -19,6 +25,18 @@ impl Plugin for PlayerPlugin {
 }
 
 fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+) {
+    commands.spawn(Camera2d);
+    spawn_player(commands, asset_server, texture_atlas_layouts);
+}
+
+/**
+ * 创建玩家实体
+ */
+fn spawn_player(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
@@ -43,8 +61,7 @@ fn setup(
     );
     //将纹理布局添加到处理器
     let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
-    commands.spawn(Camera2d);
-    commands.spawn((
+    let player_entity = commands.spawn((
         Player { moveing: false },
         Transform {
             scale: Vec3::splat(3.0),
@@ -59,7 +76,58 @@ fn setup(
         ),
         indices,
         AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+    )).id();
+    //创建装备实体
+    let equipment_entity = spawn_equipment(commands, asset_server, texture_atlas_layouts);
+    commands.entity(player_entity).with_child(equipment_entity);
+
+}
+
+/**
+ * 创建装备实体
+ */
+fn spawn_equipment(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+) -> EntityCommands<'a> {
+    //构建帧动画结构
+    let indices = AnimationIndices {
+        size: 32,
+        colum: 1,
+        row: 4,
+        direction: 0,
+    };
+    //加载图片
+    let texture: Handle<Image> = asset_server.load("image/anim/work_clothe/idle.png");
+
+    //构建纹理布局
+    let layout = TextureAtlasLayout::from_grid(
+        UVec2::splat(indices.size as u32),
+        indices.colum as u32,
+        indices.row as u32,
+        None,
+        None,
+    );
+    //将纹理布局添加到处理器
+    let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
+    let equipment_entity = commands.spawn((
+        Equipment,
+        Transform {
+            scale: Vec3::splat(3.0),
+            ..default()
+        },
+        Sprite::from_atlas_image(
+            texture,
+            TextureAtlas {
+                layout: texture_atlas_layout,
+                index: 0,
+            },
+        ),
+        indices,
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating))
     ));
+    return equipment_entity;
 }
 
 /**
@@ -69,7 +137,12 @@ fn move_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     asset_server: Res<AssetServer>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut query: Query<(&mut Transform, &mut Sprite, &mut AnimationIndices, &mut Player)>,
+    mut query: Query<(
+        &mut Transform,
+        &mut Sprite,
+        &mut AnimationIndices,
+        &mut Player,
+    )>,
 ) {
     for (mut transform, mut sprite, mut indices, mut player) in &mut query {
         let mut x: f32 = 0.0;
@@ -122,7 +195,7 @@ fn move_player(
 
         if direction != indices.direction {
             change = true;
-        }
+        } //
 
         //如果需要改变图像
         if change {
@@ -150,5 +223,3 @@ fn move_player(
         }
     }
 }
-
-
