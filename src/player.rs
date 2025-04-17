@@ -1,26 +1,23 @@
-use crate::animate_sprite::*;
 use bevy::prelude::*;
+
+use crate::animation_sprite::*;
+use crate::equipment::*;
+use crate::role::Role;
 
 /**
  * 玩家
  */
 #[derive(Component)]
-struct Player {
+pub struct Player {
     moveing: bool,
 }
-
-/**
- * 装备
- */
-#[derive(Component)]
-struct Equipment;
 
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup);
-        app.add_systems(Update, (move_player, equipment_animation_sync));
+        app.add_systems(Update, move_player);
     }
 }
 
@@ -66,6 +63,7 @@ fn spawn_player(
     let player_entity = commands
         .spawn((
             Player { moveing: false },
+            Role,
             Transform {
                 scale: Vec3::splat(3.0),
                 ..default()
@@ -103,7 +101,8 @@ fn spawn_player(
     //将纹理布局添加到处理器
     let equpment_texture_atlas_layout: Handle<TextureAtlasLayout> =
         texture_atlas_layouts.add(equpment_layout);
-
+    
+    //构建装备实体，并作为玩家的子实体
     commands.entity(player_entity).with_children(|praent| {
         praent.spawn((
             Equipment,
@@ -216,48 +215,6 @@ fn move_player(
             if let Some(atlas) = &mut sprite.texture_atlas {
                 atlas.layout = texture_atlas_layout;
                 atlas.index = indices.direction * indices.colum;
-            }
-        }
-    }
-}
-
-/** 装备动画同步 */
-fn equipment_animation_sync(
-    asset_server: Res<AssetServer>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut query: Query<
-        (&Parent, &mut Sprite, &mut AnimationIndices),
-        (With<Equipment>, Without<Player>),
-    >,
-    player: Query<(&Sprite, &AnimationIndices), With<Player>>,
-) {
-    for (
-        parent, mut equipment_sprite, 
-        mut equipment_indices) in &mut query {
-        if let Ok(
-            (player_sprite, player_indices)
-        ) = player.get(parent.get()) {
-            let player_atlas = &player_sprite.texture_atlas.as_ref().unwrap();
-            let mut path = String::from("image/anim/work_clothe/");
-            path.push_str(player_indices.name.as_str());
-            path.push_str(".png");
-            equipment_sprite.image = asset_server.load(path.as_str());
-            //构建纹理布局
-            let layout = TextureAtlasLayout::from_grid(
-                UVec2::splat(player_indices.size as u32),
-                player_indices.colum as u32,
-                player_indices.row as u32,
-                None,
-                None,
-            );
-
-            let texture_atlas_layout: Handle<TextureAtlasLayout> =
-                texture_atlas_layouts.add(layout);
-            // 最后处理 texture_atlas
-            if let Some(equipment_atlas) = &mut equipment_sprite.texture_atlas {
-                equipment_indices.colum = player_indices.colum;
-                equipment_atlas.layout = texture_atlas_layout;
-                equipment_atlas.index = player_atlas.index;
             }
         }
     }
