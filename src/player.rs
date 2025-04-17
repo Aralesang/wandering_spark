@@ -82,18 +82,11 @@ fn spawn_player(
 
     //加载图片
     let equpment_texture: Handle<Image> = asset_server.load("image/anim/work_clothe/idle.png");
-    //构建帧动画结构
-    let equipment_indices = AnimationIndices {
-        size: 32,
-        colum: 1,
-        row: 4,
-        direction: 0,
-    };
     //构建纹理布局
     let equpment_layout = TextureAtlasLayout::from_grid(
-        UVec2::splat(equipment_indices.size as u32),
-        equipment_indices.colum as u32,
-        equipment_indices.row as u32,
+        UVec2::splat(32),
+        1,
+        4,
         None,
         None,
     );
@@ -111,8 +104,7 @@ fn spawn_player(
                     layout: equpment_texture_atlas_layout,
                     index: 0,
                 },
-            ),
-            equipment_indices,
+            )
         ));
     });
 }

@@ -30,7 +30,7 @@ pub struct AnimationTimer(pub Timer);
  */
 fn update(
     time: Res<Time>,
-    mut query: Query<(&AnimationIndices, &mut Sprite, &mut AnimationTimer)>,
+    mut query: Query<(&AnimationIndices, &mut Sprite, &mut AnimationTimer), With<AnimationIndices>>,
 ) {
     for (indices, mut sprite, mut timer) in &mut query {
         timer.tick(time.delta());
