@@ -29,8 +29,3 @@ fn equipment_animation_sync(
         }
     }
 }
-
-/** 设置装备图像 */
-fn set_equipment_img(){
-
-}
