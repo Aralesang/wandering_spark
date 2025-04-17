@@ -123,16 +123,18 @@ fn spawn_player(
 fn move_player(
     keyboard_input: Res<ButtonInput<KeyCode>>,
     asset_server: Res<AssetServer>,
-    texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut query: Query<(
-        &mut Transform, &mut AnimationIndices, &mut Role,
-        &mut Sprite
-    ), With<Player>>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut query: Query<
+        (
+            &mut Transform,
+            &mut AnimationIndices,
+            &mut Role,
+            &mut Sprite,
+        ),
+        With<Player>,
+    >,
 ) {
-    for (
-        mut transform, mut indices, mut role,
-        mut sprite,
-    ) in &mut query {
+    for (mut transform, mut indices, mut role, mut sprite) in &mut query {
         let mut x: f32 = 0.0;
         let mut y: f32 = 0.0;
         let mut direction: usize = indices.direction;
@@ -166,58 +168,64 @@ fn move_player(
         if !move_ing && role.moveing {
             role.moveing = false;
             role.action = "idle".to_string();
-            set_player_img(
-                sprite, asset_server, 
-                texture_atlas_layouts, 
-                indices, "player".to_string(), 
-                "idle".to_string(), direction
+
+            let path = format!("image/anim/{}/{}.png", "player", "idle");
+            let img = asset_server.load(path);
+            //构建纹理布局
+            let layout = TextureAtlasLayout::from_grid(
+                UVec2::splat(indices.size as u32),
+                indices.colum as u32,
+                indices.row as u32,
+                None,
+                None,
             );
+            let texture_atlas_layout: Handle<TextureAtlasLayout> =
+                texture_atlas_layouts.add(layout);
+            //修改动画
+            sprite.image = img;
+            //构建帧动画结构
+            indices.colum = colum;
+            indices.direction = direction;
+
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.layout = texture_atlas_layout;
+                atlas.index = indices.direction * indices.colum;
+            }
         }
 
         //进入移动
         if move_ing && !role.moveing {
             role.moveing = true;
             role.action = "walk".to_string();
+
+            let path = format!("image/anim/{}/{}.png", "player", "walk");
+            let img = asset_server.load(path);
+
+            //构建纹理布局
+            let layout = TextureAtlasLayout::from_grid(
+                UVec2::splat(indices.size as u32),
+                indices.colum as u32,
+                indices.row as u32,
+                None,
+                None,
+            );
+            let texture_atlas_layout: Handle<TextureAtlasLayout> =
+                texture_atlas_layouts.add(layout);
+            //修改动画
+            sprite.image = img;
+            //构建帧动画结构
+            indices.colum = colum;
+            indices.direction = direction;
+
+            if let Some(atlas) = &mut sprite.texture_atlas {
+                atlas.layout = texture_atlas_layout;
+                atlas.index = indices.direction * indices.colum;
+            }
         }
 
         if direction != indices.direction {
             indices.colum = colum;
             indices.direction = direction;
         }
-    }
-}
-
-/** 设置玩家图像 */
-fn set_player_img(
-    mut sprite: Mut<Sprite>,
-    asset_server: Res<AssetServer>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
-    mut indices: Mut<AnimationIndices>,
-    animation_name: String,
-    animation_action: String,
-    direction: usize,
-) {
-    let path = format!("image/anim/{}/{}.png", animation_name, animation_action);
-    //修改动画
-    sprite.image = asset_server.load(path);
-    //构建帧动画结构
-    if animation_action == "idle" {
-        indices.colum = 1;
-    } else if animation_action == "walk" {
-        indices.colum = 8;
-    }
-    indices.direction = direction;
-    //构建纹理布局
-    let layout = TextureAtlasLayout::from_grid(
-        UVec2::splat(indices.size as u32),
-        indices.colum as u32,
-        indices.row as u32,
-        None,
-        None,
-    );
-    let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
-    if let Some(atlas) = &mut sprite.texture_atlas {
-        atlas.layout = texture_atlas_layout;
-        atlas.index = indices.direction * indices.colum;
     }
 }
