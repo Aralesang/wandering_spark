@@ -229,3 +229,38 @@ fn move_player(
         }
     }
 }
+
+/** 设置玩家图像 */
+fn set_player_img(
+    mut sprite: Mut<Sprite>,
+    asset_server: Res<AssetServer>,
+    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    mut indices: Mut<AnimationIndices>,
+    animation_name: String,
+    animation_action: String,
+    direction: usize,
+) {
+    let path = format!("image/anim/{}/{}.png", animation_name, animation_action);
+    //修改动画
+    sprite.image = asset_server.load(path);
+    //构建帧动画结构
+    if animation_action == "idle" {
+        indices.colum = 1;
+    } else if animation_action == "walk" {
+        indices.colum = 8;
+    }
+    indices.direction = direction;
+    //构建纹理布局
+    let layout = TextureAtlasLayout::from_grid(
+        UVec2::splat(indices.size as u32),
+        indices.colum as u32,
+        indices.row as u32,
+        None,
+        None,
+    );
+    let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
+    if let Some(atlas) = &mut sprite.texture_atlas {
+        atlas.layout = texture_atlas_layout;
+        atlas.index = indices.direction * indices.colum;
+    }
+}
